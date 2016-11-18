@@ -1,9 +1,16 @@
-#!/bin/bash -x
+#!/bin/bash 
 
 # This script was inspired by the hook from https://gist.github.com/jreinert/49aca3b5f3bf2c5d73d8
-# but specifically implemented for digitalocean's v2 rest api.  
-# There is a dependency on curl and jq
-# There is also no affiliation with digitalocean and no guarantees of any kind.
+# but specifically implemented for DigitalOcean's v2 rest api.  A signficant
+# difference is that the script does not put the TXT record on the primary domain
+# but rather the subdomain.  This means the name for the TXT record always
+# remains _acme-challenge. instead of being _acme-challenge.<subdomain>.  
+# Note the dependency on both curl and jq
+# Finally, there is no affiliation with the DigitalOcean corporation and 
+# absolutely no guarantees of any kind.  If you use this software you do so at your
+# own risk.  
+# The license for the use of this software is already specified
+# under the general license for dehyradated.
 
 clean_challenge(){
   curl -X DELETE -H "Content-Type: application/json" -H "Authorization: Bearer $DO_API_TOKEN" "https://api.digitalocean.com/v2/domains/${FQ_DOMAIN}/records/$1"
@@ -32,7 +39,8 @@ then
   echo "Parameters expected [deploy_challenge|clean_challenge] <fully qualified domain name> <ignored> <token>"
   echo "This will create the txt records and should be invoked by dehydrated."
   echo "Example usage: ./dehydrated --challenge dns-01 -k hooks/dns-01/digitalocean/digitaloceanhook.sh -c"
-  echo "Please be sure that you have set the DO_API_TOKEN enviornment variable and that you have properly configured dehydrated before using this script."
+  echo "Please be sure that you have set the DO_API_TOKEN environment variable and that you have properly configured dehydrated before using this script."
+
   exit 1
 fi
 
